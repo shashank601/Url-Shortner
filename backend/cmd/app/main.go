@@ -4,14 +4,16 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/shashank601/url-shortner/internals/handler"
-	"github.com/shashank601/url-shortner/internals/repo"
-	"github.com/shashank601/url-shortner/internals/service"
+	"github.com/shashank601/url-shortner/backend/internals/handler"
+	"github.com/shashank601/url-shortner/backend/internals/repo"
+	"github.com/shashank601/url-shortner/backend/internals/service"
 )
 
 func main() {
 	userRepo := &repo.UserRepo{}
+
 	userService := &service.UserService{Repo: userRepo}
+
 	userHandler := &handler.UserHandler{Service: userService}
 
 	http.HandleFunc("/users", userHandler.GetUsers)
