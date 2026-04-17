@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS click_events;
+DROP TABLE IF EXISTS urls;
+DROP TABLE IF EXISTS customers;
