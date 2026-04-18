@@ -15,54 +15,47 @@ func NewCustomerRepo(db *pgxpool.Pool) *CustomerRepo {
 	return &CustomerRepo{DB: db}
 }
 
-func (r *CustomerRepo) CreateCustomer(ctx context.Context, customer *domain.Customer) (int, string, string, error) {
-	
+func (r *CustomerRepo) CreateCustomer(ctx context.Context, customer *domain.Customer) (*domain.Customer, error) {
 	query := `
 	INSERT INTO customers (name, email, password)
 	VALUES ($1, $2, $3)
-	RETURNING id, name, email
+	RETURNING id, name, email, created_at
 	`
 	
-	var id int
-	var name string
-	var email string
-	err := r.DB.QueryRow(ctx, query, customer.Name, customer.Email, customer.Password).Scan(&id, &name, &email)
-
+	var createdCustomer domain.Customer
+	err := r.DB.QueryRow(ctx, query, customer.Name, customer.Email, customer.Password).Scan(
+		&createdCustomer.ID,
+		&createdCustomer.Name,
+		&createdCustomer.Email,
+		&createdCustomer.CreatedAt,
+	)
 
 	if err != nil {
-		return 0, "", "", err
+		return nil, err
 	}
 
-	return id, name, email, nil
+	return &createdCustomer, nil
 }
 
 
-// for setup
-// import (
-//     "context"
-//     "fmt"
-//     "os"
 
-//     "github.com/jackc/pgx/v5/pgxpool"
-// )
+func (r *CustomerRepo) GetCustomerByEmail(ctx context.Context, email string) (*domain.Customer, error) {
+	query := `
+	SELECT id, name, email, password, created_at FROM customers WHERE email = $1
+	`
+	
+	var customer domain.Customer
+	err := r.DB.QueryRow(ctx, query, email).Scan(
+		&customer.ID,
+		&customer.Name,
+		&customer.Email,
+		&customer.Password,
+		&customer.CreatedAt,
+	)
 
-// func main() {
-//     ctx := context.Background()
-//     connStr := "postgres://username:password@localhost:5432/dbname"
+	if err != nil {
+		return nil, err
+	}
 
-//     // Create the connection pool
-//     pool, err := pgxpool.New(ctx, connStr)
-//     if err != nil {
-//         fmt.Fprintf(os.Stderr, "Unable to create connection pool: %v\n", err)
-//         os.Exit(1)
-//     }
-//     defer pool.Close() // Ensure the pool is closed when the app exits
-
-//     // Verify the connection
-//     if err := pool.Ping(ctx); err != nil {
-//         fmt.Printf("Ping failed: %v\n", err)
-//         return
-//     }
-
-//     fmt.Println("Connected to PostgreSQL!")
-// }
+	return &customer, nil
+}
