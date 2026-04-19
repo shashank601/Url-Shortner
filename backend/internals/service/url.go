@@ -61,9 +61,23 @@ func isDuplicateError(err error) bool {
 
 
 func (s *UrlService) GetUrl(ctx context.Context, req dto.GetUrlRequest) (*dto.GetUrlResponse, error) {
-	url, err := s.Repo.GetUrlByKey(ctx, req.ShortCode, req.CustomerID)
+
+
+	url, err := s.Repo.GetUrlFromCache(ctx, req.ShortCode)
+	if err == nil {
+		return &dto.GetUrlResponse{
+			OriginalUrl: url.OriginalUrl,
+		}, nil
+	}
+
+
+	url, err = s.Repo.GetUrlByKey(ctx, req.ShortCode, req.CustomerID)
 	if err != nil {
 		return nil, err
+	}
+
+	if err := s.Repo.SetUrlInCache(ctx, req.ShortCode, url); err != nil {
+		fmt.Printf("failed to set")
 	}
 
 	return &dto.GetUrlResponse{

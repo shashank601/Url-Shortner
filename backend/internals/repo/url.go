@@ -2,16 +2,21 @@ package repo
 
 import (
 	"context"
+	"encoding/json"
+	"time"
+
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/redis/go-redis/v9"
 	"github.com/shashank601/url-shortner/backend/internals/domain"
 )
 
 type UrlRepo struct {
 	DB *pgxpool.Pool
+    Redis *redis.Client
 }
 
-func NewUrlRepo(db *pgxpool.Pool) *UrlRepo {
-	return &UrlRepo{DB: db}
+func NewUrlRepo(db *pgxpool.Pool, redis *redis.Client) *UrlRepo {
+	return &UrlRepo{DB: db, Redis: redis}
 }
 
 
@@ -55,5 +60,25 @@ func (r *UrlRepo) GetUrlByKey(ctx context.Context, shortCode string, customerID 
 
     return &url, nil
 }
+func (r *UrlRepo) SetUrlInCache(ctx context.Context, shortCode string, url *domain.Url) error {
 
+    data, err := json.Marshal(url)
+    if err != nil {
+        return err
+    }
+    
+    return r.Redis.Set(ctx, shortCode, data, 24*time.Hour).Err()
+}
 
+func (r *UrlRepo) GetUrlFromCache(ctx context.Context, shortCode string) (*domain.Url, error) {
+    data, err := r.Redis.Get(ctx, shortCode).Bytes()
+    if err != nil {
+        return nil, err
+    }
+
+    var url domain.Url
+    if err := json.Unmarshal(data, &url); err != nil {
+        return nil, err
+    }
+    return &url, nil
+}
