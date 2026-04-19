@@ -40,3 +40,15 @@ func (s *UrlService) ShortenUrl(ctx context.Context, req dto.UrlShortenRequest) 
 		ShortCode: shortCode,
 	}, nil
 }
+
+func (s *UrlService) GetUrl(ctx context.Context, req dto.GetUrlRequest) (*dto.GetUrlResponse, error) {
+	url, err := s.Repo.GetUrlByKey(ctx, req.ShortCode, req.CustomerID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.GetUrlResponse{
+		OriginalUrl: url.OriginalUrl,
+	}, nil
+}
+

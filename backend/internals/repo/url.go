@@ -33,4 +33,27 @@ func (r *UrlRepo) InsertUrlKey(ctx context.Context, url *domain.Url) (string, er
     return shortCode, nil
 }
 
+func (r *UrlRepo) GetUrlByKey(ctx context.Context, shortCode string, customerID int) (*domain.Url, error) {
+    query := `
+        SELECT id, customer_id, original_url, short_code, is_active
+        FROM urls
+        WHERE short_code = $1 AND customer_id = $2
+    `
+
+    var url domain.Url
+    err := r.DB.QueryRow(ctx, query, shortCode, customerID).Scan(
+        &url.ID,
+        &url.CustomerID,
+        &url.OriginalUrl,
+        &url.ShortCode,
+        &url.IsActive,
+    )
+    
+    if err != nil {
+        return nil, err
+    }
+
+    return &url, nil
+}
+
 

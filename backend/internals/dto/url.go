@@ -8,3 +8,13 @@ type UrlShortenRequest struct {
 type UrlShortenResponse struct {
 	ShortCode string `json:"short_code"`
 }
+
+type GetUrlRequest struct {
+	CustomerID int    `json:"customer_id"`
+	ShortCode  string `json:"short_code"`
+}
+
+type GetUrlResponse struct {
+	OriginalUrl string `json:"original_url"`
+}
+
