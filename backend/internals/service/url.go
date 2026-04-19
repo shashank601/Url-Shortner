@@ -2,8 +2,11 @@ package service
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"strings"
 	
-
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/shashank601/url-shortner/backend/internals/dto"
 	"github.com/shashank601/url-shortner/backend/internals/domain"
 	"github.com/shashank601/url-shortner/backend/internals/repo"
@@ -24,22 +27,38 @@ func (s *UrlService) ShortenUrl(ctx context.Context, req dto.UrlShortenRequest) 
 		OriginalUrl: req.OriginalUrl,
 	}
 
-	shortCode, err := shortcode.Generate(url.OriginalUrl)
-	if err != nil {
-		return nil, err
+	const maxRetries = 5
+	for i := 0; i < maxRetries; i++ {
+		shortCode, err := shortcode.Generate(url.OriginalUrl)
+		if err != nil {
+			return nil, err
+		}
+
+		url.ShortCode = shortCode
+
+		_, err = s.Repo.InsertUrlKey(ctx, url)
+		if err == nil {
+			return &dto.UrlShortenResponse{ShortCode: shortCode}, nil
+		}
+
+		if !isDuplicateError(err) {
+			return nil, err
+		}
 	}
 
-	url.ShortCode = shortCode
-
-	_, err = s.Repo.InsertUrlKey(ctx, url)
-	if err != nil {
-		return nil, err
-	}
-
-	return &dto.UrlShortenResponse{
-		ShortCode: shortCode,
-	}, nil
+	return nil, fmt.Errorf("failed to generate unique shortcode")
 }
+
+func isDuplicateError(err error) bool {
+	var pgErr *pgconn.PgError
+	if errors.As(err, &pgErr) {
+		return pgErr.Code == "23505"
+	}
+
+	return strings.Contains(strings.ToLower(err.Error()), "duplicate key")
+}
+
+
 
 func (s *UrlService) GetUrl(ctx context.Context, req dto.GetUrlRequest) (*dto.GetUrlResponse, error) {
 	url, err := s.Repo.GetUrlByKey(ctx, req.ShortCode, req.CustomerID)
