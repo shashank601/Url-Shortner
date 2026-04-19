@@ -2,15 +2,14 @@ package service
 
 import (
 	"context"
+	"os"
 
 	"golang.org/x/crypto/bcrypt"
 	"github.com/golang-jwt/jwt/v5"
-	
+
 	"github.com/shashank601/url-shortner/backend/internals/domain"
 	"github.com/shashank601/url-shortner/backend/internals/dto"
 	"github.com/shashank601/url-shortner/backend/internals/repo"
-
-
 )
 
 
@@ -74,7 +73,7 @@ func (s *AuthService) Login(ctx context.Context, req dto.LoginRequest) (dto.Logi
 		"email": customer.Email,
 	})
 
-	tokenString, err := token.SignedString([]byte("JWT_SECRET_KEY"))
+	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
 		return dto.LoginResponse{}, err
 	}

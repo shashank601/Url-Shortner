@@ -1,14 +1,20 @@
 package shortcode
 
-import "math/rand"
+import (
+	"math/rand"
+	"time"
+)
 
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
 
 func Generate(input string) (string, error) {
-
-	randomString := ""
-	for i := 0; i < 6; i++ {
-		randomString += string(rune(rand.Intn(26) + 'a'))
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	randomString := make([]byte, 6)
+	for i := range randomString {
+		randomString[i] = charset[rand.Intn(len(charset))]
 	}
 
-	return randomString, nil
+	return string(randomString), nil
 }

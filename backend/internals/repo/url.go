@@ -21,21 +21,23 @@ func NewUrlRepo(db *pgxpool.Pool, redis *redis.Client) *UrlRepo {
 
 
 
-func (r *UrlRepo) InsertUrlKey(ctx context.Context, url *domain.Url) (string, error) {
+func (r *UrlRepo) InsertUrlKey(ctx context.Context, url *domain.Url) (int, error) {
     query := `
         INSERT INTO urls (customer_id, original_url, short_code)
         VALUES ($1, $2, $3) 
-        RETURNING short_code
+        RETURNING id
     `
 
-    var shortCode string
-    err := r.DB.QueryRow(ctx, query, url.CustomerID, url.OriginalUrl, url.ShortCode).Scan(&shortCode)
+    var id int
+    err := r.DB.QueryRow(ctx, query, url.CustomerID, url.OriginalUrl, url.ShortCode).Scan(&id)
     
     if err != nil {
-        return "", err
+        return 0, err
     }
 
-    return shortCode, nil
+	url.ID = id
+
+	return id, nil
 }
 
 func (r *UrlRepo) GetUrlByKey(ctx context.Context, shortCode string) (*domain.Url, error) {

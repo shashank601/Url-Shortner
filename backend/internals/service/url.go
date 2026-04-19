@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/url"
 	"strings"
-	
+
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/shashank601/url-shortner/backend/internals/dto"
 	"github.com/shashank601/url-shortner/backend/internals/domain"
@@ -67,9 +68,39 @@ func isDuplicateError(err error) bool {
 
 func (s *UrlService) GetUrl(ctx context.Context, req dto.GetUrlRequest) (*dto.GetUrlResponse, error) {
 
+	bgCtx := context.WithoutCancel(ctx)
+
+	ref := req.Referer
+	if ref == "" {
+		ref = "direct"
+	} else {
+		u, err := url.Parse(ref)
+		if err != nil || u.Host == "" {
+			ref = "unknown"
+		} else {
+			host := strings.ToLower(u.Host)
+			host = strings.TrimPrefix(host, "www.")
+			ref = host
+		}
+	}
+
+	click := domain.ClickEvent{
+		UrlID:     0, 
+		Referrer:  ref,
+		UserAgent: req.UserAgent,
+		IP:        req.IP,
+	}
+
+	
 
 	url, err := s.Repo.GetUrlFromCache(ctx, req.ShortCode)
 	if err == nil {
+		click.UrlID = url.ID
+		go func() {
+			if err := s.Repo.InsertClickEvent(bgCtx, &click); err != nil {
+				fmt.Printf("failed to generate click event: %v\n", err)
+			}
+		}()
 		return &dto.GetUrlResponse{
 			OriginalUrl: url.OriginalUrl,
 		}, nil
@@ -81,23 +112,20 @@ func (s *UrlService) GetUrl(ctx context.Context, req dto.GetUrlRequest) (*dto.Ge
 		return nil, err
 	}
 
+	click.UrlID = url.ID
+	
 	if err := s.Repo.SetUrlInCache(ctx, req.ShortCode, url); err != nil {
 		fmt.Printf("failed to set cache: %v\n", err)
 	}
-
-	bgCtx := context.WithoutCancel(ctx)
-	click := &domain.ClickEvent{
-		UrlID:     url.ID,
-		Referrer:  req.Referer,
-		UserAgent: req.UserAgent,
-		IP:        req.IP,
-	}
-
+	
 	go func() {
-		if err := s.Repo.InsertClickEvent(bgCtx, click); err != nil {
+		if err := s.Repo.InsertClickEvent(bgCtx, &click); err != nil {
 			fmt.Printf("failed to generate click event: %v\n", err)
 		}
 	}()
+	
+
+	
 
 
 	return &dto.GetUrlResponse{

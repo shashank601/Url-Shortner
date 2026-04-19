@@ -34,6 +34,13 @@ func (h *UrlHandler) ShortenUrl(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+
+
+
+
+
+
+
 func (h *UrlHandler) GetUrl(w http.ResponseWriter, r *http.Request) {
 	shortCode := r.PathValue("code")
 	if shortCode == "" {
@@ -52,10 +59,12 @@ func (h *UrlHandler) GetUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	http.Redirect(w, r, response.OriginalUrl, http.StatusFound)
 }
 
+
+
+// getIP extracts the real client IP from request headers
 func (h *UrlHandler) getIP(r *http.Request) string {
 	if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
 		parts := strings.Split(fwd, ",")
