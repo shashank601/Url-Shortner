@@ -10,11 +10,12 @@ type UrlShortenResponse struct {
 }
 
 type GetUrlRequest struct {
-	CustomerID int    `json:"customer_id"`
 	ShortCode  string `json:"short_code"`
+	UserAgent  string `json:"user_agent"`
+	Referer    string `json:"referer"`
+	IP         string `json:"ip"`
 }
 
 type GetUrlResponse struct {
 	OriginalUrl string `json:"original_url"`
 }
-

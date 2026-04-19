@@ -21,6 +21,8 @@ func NewUrlService(r *repo.UrlRepo) *UrlService {
 	return &UrlService{Repo: r}
 }
 
+
+
 func (s *UrlService) ShortenUrl(ctx context.Context, req dto.UrlShortenRequest) (*dto.UrlShortenResponse, error) {
 	url := &domain.Url{
 		CustomerID:  req.CustomerID,
@@ -60,6 +62,9 @@ func isDuplicateError(err error) bool {
 
 
 
+
+
+
 func (s *UrlService) GetUrl(ctx context.Context, req dto.GetUrlRequest) (*dto.GetUrlResponse, error) {
 
 
@@ -71,14 +76,29 @@ func (s *UrlService) GetUrl(ctx context.Context, req dto.GetUrlRequest) (*dto.Ge
 	}
 
 
-	url, err = s.Repo.GetUrlByKey(ctx, req.ShortCode, req.CustomerID)
+	url, err = s.Repo.GetUrlByKey(ctx, req.ShortCode)
 	if err != nil {
 		return nil, err
 	}
 
 	if err := s.Repo.SetUrlInCache(ctx, req.ShortCode, url); err != nil {
-		fmt.Printf("failed to set")
+		fmt.Printf("failed to set cache: %v\n", err)
 	}
+
+	bgCtx := context.WithoutCancel(ctx)
+	click := &domain.ClickEvent{
+		UrlID:     url.ID,
+		Referrer:  req.Referer,
+		UserAgent: req.UserAgent,
+		IP:        req.IP,
+	}
+
+	go func() {
+		if err := s.Repo.InsertClickEvent(bgCtx, click); err != nil {
+			fmt.Printf("failed to generate click event: %v\n", err)
+		}
+	}()
+
 
 	return &dto.GetUrlResponse{
 		OriginalUrl: url.OriginalUrl,

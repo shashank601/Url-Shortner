@@ -11,7 +11,7 @@ import (
 func NewRedisClient() *redis.Client {
 
     opts := &redis.Options{
-        Addr:     "localhost:6379", // we will use upstash not local server
+        Addr:     "localhost:6379", // we will use upstash not local server~
         Password: "",               
         DB:       0,                
     }

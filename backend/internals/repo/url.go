@@ -38,15 +38,15 @@ func (r *UrlRepo) InsertUrlKey(ctx context.Context, url *domain.Url) (string, er
     return shortCode, nil
 }
 
-func (r *UrlRepo) GetUrlByKey(ctx context.Context, shortCode string, customerID int) (*domain.Url, error) {
+func (r *UrlRepo) GetUrlByKey(ctx context.Context, shortCode string) (*domain.Url, error) {
     query := `
         SELECT id, customer_id, original_url, short_code, is_active
         FROM urls
-        WHERE short_code = $1 AND customer_id = $2
+        WHERE short_code = $1
     `
 
     var url domain.Url
-    err := r.DB.QueryRow(ctx, query, shortCode, customerID).Scan(
+    err := r.DB.QueryRow(ctx, query, shortCode).Scan(
         &url.ID,
         &url.CustomerID,
         &url.OriginalUrl,
@@ -81,4 +81,15 @@ func (r *UrlRepo) GetUrlFromCache(ctx context.Context, shortCode string) (*domai
         return nil, err
     }
     return &url, nil
+}
+
+
+func (r *UrlRepo) InsertClickEvent(ctx context.Context, evt *domain.ClickEvent) error {
+    query := `
+        INSERT INTO click_events (url_id, ip_address, user_agent, referrer)
+        VALUES ($1, $2, $3, $4)
+    `
+
+    _, err := r.DB.Exec(ctx, query, evt.UrlID, evt.IP, evt.UserAgent, evt.Referrer)
+    return err
 }
