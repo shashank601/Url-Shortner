@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -14,7 +15,10 @@ func NewDB() *pgxpool.Pool {
 		log.Fatal("DATABASE_URL not set")
 	}
 
-	pool, err := pgxpool.New(context.Background(), dbURL)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	pool, err := pgxpool.New(ctx, dbURL)
 	if err != nil {
 		log.Fatal("failed to create pool:", err)
 	}
