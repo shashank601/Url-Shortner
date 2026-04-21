@@ -4,27 +4,23 @@ import (
 	"context"
 	"os"
 
-	"golang.org/x/crypto/bcrypt"
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/shashank601/url-shortner/backend/internals/domain"
 	"github.com/shashank601/url-shortner/backend/internals/dto"
 	"github.com/shashank601/url-shortner/backend/internals/repo"
 )
 
-
 type AuthService struct {
 	Repo *repo.CustomerRepo
 }
-
 
 func NewAuthService(r *repo.CustomerRepo) *AuthService {
 	return &AuthService{Repo: r}
 }
 
-
 func (s *AuthService) Register(ctx context.Context, req dto.RegisterRequest) (dto.RegisterResponse, error) {
-
 
 	customer := &domain.Customer{
 		Name:     req.Name,
@@ -33,7 +29,6 @@ func (s *AuthService) Register(ctx context.Context, req dto.RegisterRequest) (dt
 	}
 
 	hashed, err := bcrypt.GenerateFromPassword([]byte(customer.Password), bcrypt.DefaultCost)
-
 
 	if err != nil {
 		return dto.RegisterResponse{}, err
@@ -52,9 +47,6 @@ func (s *AuthService) Register(ctx context.Context, req dto.RegisterRequest) (dt
 		Email: createdCustomer.Email,
 	}, nil
 }
-
-
-
 
 func (s *AuthService) Login(ctx context.Context, req dto.LoginRequest) (dto.LoginResponse, error) {
 	customer, err := s.Repo.GetCustomerByEmail(ctx, req.Email)
@@ -85,4 +77,3 @@ func (s *AuthService) Login(ctx context.Context, req dto.LoginRequest) (dto.Logi
 		Token: tokenString,
 	}, nil
 }
-

@@ -2,33 +2,47 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/shashank601/url-shortner/backend/internals/dto"
 	"github.com/shashank601/url-shortner/backend/internals/repo"
 )
 
 type AnalyticsService struct {
-	Repo *repo.AnalyticsRepo	
+	AnalyticsRepo *repo.AnalyticsRepo
+	UrlRepo     *repo.UrlRepo
 }
 
-func NewAnalyticsService(repo *repo.AnalyticsRepo) *AnalyticsService {
+func NewAnalyticsService(analyticsRepo *repo.AnalyticsRepo, urlRepo *repo.UrlRepo) *AnalyticsService {
 	return &AnalyticsService{
-		Repo: repo,
+		AnalyticsRepo: analyticsRepo,
+		UrlRepo:     urlRepo,
 	}
 }
 
 
 func (s *AnalyticsService) GetAnalytics(ctx context.Context, req dto.AnalyticsRequest) (dto.AnalyticsResponse, error) {
-	analytics, err := s.Repo.GetAnalytics(ctx, req.CustomerID, req.UrlID)
+	
+	url, err := s.UrlRepo.GetUrlByKey(ctx, req.ShortCode)
 	if err != nil {
 		return dto.AnalyticsResponse{}, err
 	}
+
 	
+	if url.CustomerID != req.CustomerID {
+		return dto.AnalyticsResponse{}, fmt.Errorf("unauthorized: URL does not belong to customer")
+	}
+
+	analytics, err := s.AnalyticsRepo.GetAnalytics(ctx, req.CustomerID, url.ID)
+	if err != nil {
+		return dto.AnalyticsResponse{}, err
+	}
+
 	return dto.AnalyticsResponse{
-		TotalClicks: analytics.TotalClicks,
+		TotalClicks:  analytics.TotalClicks,
 		UniqueClicks: analytics.UniqueClicks,
-		Browsers: analytics.Browsers,
-		OS: analytics.OS,
-		Referrers: analytics.Referrers,
+		Browsers:     analytics.Browsers,
+		OS:           analytics.OS,
+		Referrers:    analytics.Referrers,
 	}, nil
 }

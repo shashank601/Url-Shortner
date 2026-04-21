@@ -21,7 +21,7 @@ func (r *CustomerRepo) CreateCustomer(ctx context.Context, customer *domain.Cust
 	VALUES ($1, $2, $3)
 	RETURNING id, name, email, created_at
 	`
-	
+
 	var createdCustomer domain.Customer
 	err := r.DB.QueryRow(ctx, query, customer.Name, customer.Email, customer.Password).Scan(
 		&createdCustomer.ID,
@@ -37,13 +37,11 @@ func (r *CustomerRepo) CreateCustomer(ctx context.Context, customer *domain.Cust
 	return &createdCustomer, nil
 }
 
-
-
 func (r *CustomerRepo) GetCustomerByEmail(ctx context.Context, email string) (*domain.Customer, error) {
 	query := `
 	SELECT id, name, email, password, created_at FROM customers WHERE email = $1
 	`
-	
+
 	var customer domain.Customer
 	err := r.DB.QueryRow(ctx, query, email).Scan(
 		&customer.ID,

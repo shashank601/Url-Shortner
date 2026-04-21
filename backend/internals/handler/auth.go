@@ -2,9 +2,9 @@ package handler
 
 import (
 	"encoding/json"
-	"net/http"
-	"github.com/shashank601/url-shortner/backend/internals/service"
 	"github.com/shashank601/url-shortner/backend/internals/dto"
+	"github.com/shashank601/url-shortner/backend/internals/service"
+	"net/http"
 )
 
 type AuthHandler struct {
@@ -29,14 +29,10 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	
-
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 
-
 }
-
 
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req dto.LoginRequest
@@ -47,13 +43,11 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response, err := h.Service.Login(r.Context(), req)
-	
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)

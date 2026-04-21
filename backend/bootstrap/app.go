@@ -8,7 +8,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-
 func StartApp() {
 	_ = godotenv.Load()
 	setDefaultEnv("PORT", "8080")
@@ -27,7 +26,6 @@ func StartApp() {
 		log.Fatal("server failed:", err)
 	}
 }
-
 
 func setDefaultEnv(key, value string) {
 	if os.Getenv(key) == "" {

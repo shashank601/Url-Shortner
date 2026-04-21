@@ -2,10 +2,14 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
+	"net"
 	"net/http"
 	"strings"
-	"github.com/shashank601/url-shortner/backend/internals/service"
+
+	"github.com/jackc/pgx/v5"
 	"github.com/shashank601/url-shortner/backend/internals/dto"
+	"github.com/shashank601/url-shortner/backend/internals/service"
 )
 
 type UrlHandler struct {
@@ -55,6 +59,10 @@ func (h *UrlHandler) GetUrl(w http.ResponseWriter, r *http.Request) {
 		IP:        h.getIP(r),
 	})
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			http.Error(w, "url not found", http.StatusNotFound)
+			return
+		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -76,6 +84,11 @@ func (h *UrlHandler) getIP(r *http.Request) string {
 	ip := r.Header.Get("X-Real-IP")
 	if ip != "" {
 		return strings.TrimSpace(ip)
+	}
+
+	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err == nil {
+		return host
 	}
 
 	return r.RemoteAddr

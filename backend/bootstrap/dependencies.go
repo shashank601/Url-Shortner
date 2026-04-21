@@ -8,35 +8,29 @@ import (
 	"github.com/shashank601/url-shortner/backend/internals/service"
 )
 
-
-
 type Dependencies struct {
-    UrlHandler *handler.UrlHandler
-    AuthHandler *handler.AuthHandler
+	UrlHandler       *handler.UrlHandler
+	AuthHandler      *handler.AuthHandler
 	AnalyticsHandler *handler.AnalyticsHandler
 }
 
-
-
 func InitDependencies(db *pgxpool.Pool, rdb *redis.Client) *Dependencies {
-    
-    urlRepo := repo.NewUrlRepo(db, rdb)
-    customerRepo := repo.NewCustomerRepo(db)
+
+	urlRepo := repo.NewUrlRepo(db, rdb)
+	customerRepo := repo.NewCustomerRepo(db)
 	analyticsRepo := repo.NewAnalyticsRepo(db)
 
-    
-    urlService := service.NewUrlService(urlRepo)
-    authService := service.NewAuthService(customerRepo)
-	analyticsService := service.NewAnalyticsService(analyticsRepo)
+	urlService := service.NewUrlService(urlRepo)
+	authService := service.NewAuthService(customerRepo)
+	analyticsService := service.NewAnalyticsService(analyticsRepo, urlRepo)
 
-   
-    urlHandler := handler.NewUrlHandler(urlService)
-    authHandler := handler.NewAuthHandler(authService)
+	urlHandler := handler.NewUrlHandler(urlService)
+	authHandler := handler.NewAuthHandler(authService)
 	analyticsHandler := handler.NewAnalyticsHandler(analyticsService)
 
-    return &Dependencies{
-        UrlHandler: urlHandler,
-        AuthHandler: authHandler,
+	return &Dependencies{
+		UrlHandler:       urlHandler,
+		AuthHandler:      authHandler,
 		AnalyticsHandler: analyticsHandler,
-    }
+	}
 }

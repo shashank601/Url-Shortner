@@ -11,15 +11,11 @@ type Url struct {
 	IsActive    bool
 }
 
-
 type ClickEvent struct {
-	ID         int
-	UrlID      int
-	Referrer   string
-	UserAgent  string
-	IP         string
-	CreatedAt  time.Time
+	ID        int
+	UrlID     int
+	Referrer  string
+	UserAgent string
+	IP        string
+	CreatedAt time.Time
 }
-
-
-

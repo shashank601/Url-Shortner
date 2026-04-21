@@ -25,8 +25,13 @@ func NewUrlService(r *repo.UrlRepo) *UrlService {
 
 
 func (s *UrlService) ShortenUrl(ctx context.Context, req dto.UrlShortenRequest) (*dto.UrlShortenResponse, error) {
+	customerID, ok := ctx.Value("customer_id").(int)
+	if !ok {
+		return nil, fmt.Errorf("unauthorized")
+	}
+
 	url := &domain.Url{
-		CustomerID:  req.CustomerID,
+		CustomerID:  customerID,
 		OriginalUrl: req.OriginalUrl,
 	}
 
@@ -41,7 +46,7 @@ func (s *UrlService) ShortenUrl(ctx context.Context, req dto.UrlShortenRequest) 
 
 		_, err = s.Repo.InsertUrlKey(ctx, url)
 		if err == nil {
-			return &dto.UrlShortenResponse{ShortCode: shortCode}, nil
+			return &dto.UrlShortenResponse{ID: url.ID, ShortCode: shortCode}, nil
 		}
 
 		if !isDuplicateError(err) {

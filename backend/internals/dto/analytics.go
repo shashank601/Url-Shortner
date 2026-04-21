@@ -1,8 +1,8 @@
 package dto
 
 type AnalyticsRequest struct {
-	CustomerID int `json:"customer_id"`
-	UrlID      int `json:"url_id"`
+	CustomerID int    `json:"customer_id"`
+	ShortCode  string `json:"short_code"`
 }
 
 

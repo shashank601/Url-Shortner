@@ -1,12 +1,16 @@
 package bootstrap
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/shashank601/url-shortner/backend/internals/middleware"
+)
 
 func InitRouter(dep *Dependencies) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	// URL routes
-	mux.HandleFunc("POST /shorten", dep.UrlHandler.ShortenUrl)
+	mux.Handle("POST /shorten", middleware.JWTAuth(http.HandlerFunc(dep.UrlHandler.ShortenUrl)))
 	mux.HandleFunc("GET /{code}", dep.UrlHandler.GetUrl)
 
 	// Auth routes
@@ -14,7 +18,7 @@ func InitRouter(dep *Dependencies) *http.ServeMux {
 	mux.HandleFunc("POST /login", dep.AuthHandler.Login)
 
 	// Analytics routes
-	mux.HandleFunc("GET /analytics/{code}", dep.AnalyticsHandler.GetAnalytics)
+	mux.Handle("GET /analytics/{code}", middleware.JWTAuth(http.HandlerFunc(dep.AnalyticsHandler.GetAnalytics)))
 
 	return mux
 }
