@@ -19,6 +19,9 @@ func InitRouter(dep *Dependencies) *http.ServeMux {
 
 	// Analytics routes
 	mux.Handle("GET /analytics/{code}", middleware.JWTAuth(http.HandlerFunc(dep.AnalyticsHandler.GetAnalytics)))
+	
+	// User routes
+	mux.Handle("GET /urls", middleware.JWTAuth(http.HandlerFunc(dep.UrlHandler.ListUserURLs)))
 
 	return mux
 }

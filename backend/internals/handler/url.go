@@ -56,7 +56,7 @@ func (h *UrlHandler) GetUrl(w http.ResponseWriter, r *http.Request) {
 		ShortCode: shortCode,
 		UserAgent: r.UserAgent(),
 		Referer:   r.Referer(),
-		IP:        h.getIP(r),
+		IP:        getIP(r),
 	})
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -73,7 +73,7 @@ func (h *UrlHandler) GetUrl(w http.ResponseWriter, r *http.Request) {
 
 
 // getIP extracts the real client IP from request headers
-func (h *UrlHandler) getIP(r *http.Request) string {
+func getIP(r *http.Request) string {
 	if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
 		parts := strings.Split(fwd, ",")
 		if len(parts) > 0 {
@@ -92,4 +92,15 @@ func (h *UrlHandler) getIP(r *http.Request) string {
 	}
 
 	return r.RemoteAddr
+}
+
+func (h *UrlHandler) ListUserURLs(w http.ResponseWriter, r *http.Request) {
+	urls, err := h.Service.ListUserURLs(r.Context())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(urls)
 }

@@ -19,3 +19,10 @@ type GetUrlRequest struct {
 type GetUrlResponse struct {
 	OriginalUrl string `json:"original_url"`
 }
+
+type ListUrlResponse struct {
+	ID        int    `json:"url_id"`
+	ShortCode string `json:"short_code"`
+	OriginalUrl string `json:"original_url"`
+}
+

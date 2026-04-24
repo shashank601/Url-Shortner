@@ -18,6 +18,7 @@ func NewAuthHandler(s *service.AuthService) *AuthHandler {
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var req dto.RegisterRequest
 
+	defer r.Body.Close()
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid request", http.StatusBadRequest)
 		return
@@ -36,7 +37,8 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req dto.LoginRequest
-
+	defer r.Body.Close()
+	
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid request", http.StatusBadRequest)
 		return

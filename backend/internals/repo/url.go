@@ -92,3 +92,41 @@ func (r *UrlRepo) InsertClickEvent(ctx context.Context, evt *domain.ClickEvent) 
 	_, err := r.DB.Exec(ctx, query, evt.UrlID, evt.IP, evt.UserAgent, evt.Referrer)
 	return err
 }
+
+func (r *UrlRepo) ListUserURLs(ctx context.Context, customerID int) ([]domain.Url, error) {
+	query := `
+        SELECT id, customer_id, original_url, short_code, is_active
+        FROM urls
+        WHERE customer_id = $1
+    `
+
+	var urls []domain.Url
+	rows, err := r.DB.Query(ctx, query, customerID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var u domain.Url
+
+		err := rows.Scan(
+			&u.ID,
+			&u.CustomerID,
+			&u.OriginalUrl,
+			&u.ShortCode,
+			&u.IsActive,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		urls = append(urls, u)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return urls, nil
+}

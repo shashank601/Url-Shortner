@@ -138,3 +138,24 @@ func (s *UrlService) GetUrl(ctx context.Context, req dto.GetUrlRequest) (*dto.Ge
 	}, nil
 }
 
+func (s *UrlService) ListUserURLs(ctx context.Context) ([]dto.ListUrlResponse, error) {
+	customerID, ok := ctx.Value("customer_id").(int)
+	if !ok {
+		return nil, errors.New("unauthorized")
+	}
+
+	var urls []dto.ListUrlResponse
+	dbUrls, err := s.Repo.ListUserURLs(ctx, customerID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, dbUrl := range dbUrls {
+		urls = append(urls, dto.ListUrlResponse{
+			ID:          dbUrl.ID,
+			ShortCode:   dbUrl.ShortCode,
+			OriginalUrl: dbUrl.OriginalUrl,
+		})
+	}
+	return urls, nil
+}
