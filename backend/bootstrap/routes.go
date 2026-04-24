@@ -23,5 +23,10 @@ func InitRouter(dep *Dependencies) *http.ServeMux {
 	// User routes
 	mux.Handle("GET /urls", middleware.JWTAuth(http.HandlerFunc(dep.UrlHandler.ListUserURLs)))
 
+	mux.Handle("GET /verify", middleware.JWTAuth(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+	})))
+
 	return mux
 }
