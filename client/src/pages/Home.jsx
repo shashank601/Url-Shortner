@@ -1,7 +1,9 @@
+import InputBar from "../components/InputBar";
+
 export default function Home() {
     return (
         <div>
-            <h1>Home</h1>
+            <InputBar />
         </div>
     );
 };

@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 )
 
 func StartApp() {
@@ -20,9 +21,18 @@ func StartApp() {
 	deps := InitDependencies(db, rdb)
 	router := InitRouter(deps)
 
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:5173"}, // hardcoded for now
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders: []string{"Content-Type", "Authorization"},
+	})
+
+	handler := c.Handler(router)
+
 	addr := ":" + port
 	log.Println("server started on", addr)
-	if err := http.ListenAndServe(addr, router); err != nil {
+
+	if err := http.ListenAndServe(addr, handler); err != nil {
 		log.Fatal("server failed:", err)
 	}
 }

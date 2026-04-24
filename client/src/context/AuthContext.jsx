@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getToken, clearToken, setToken } from "../utils/Token.js";
 
-import { Verify } from "../services/AuthService.js";
+import { verify } from "../services/Auth.js";
 
 export const AuthContext = createContext(null);
 
@@ -15,12 +15,13 @@ export const AuthProvider = ({ children }) => {
   
 
   useEffect(() => {
+    setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImEiLCJpZCI6MywibmFtZSI6ImEifQ.a_o0JDvoOopMb9Aztx6mOsDLsSKOMyDQbQAknzWpuow");
     const token = getToken();
-
+    
     if (token) {
-      Verify()
-        .then((res) => {
-          setUser(res.data.data);
+      verify()
+        .then(() => {
+          setUser({ token });
         })
         .catch((err) => {
           clearToken();

@@ -1,4 +1,4 @@
-import api from "./axios.js";
+import api from "./Axios.js";
 import { clearToken } from "../utils/Token.js";
 
 export const login = async (email, password) => {

@@ -1,7 +1,13 @@
+import { BrowserRouter } from "react-router-dom";
+import AppRoutes from "./routes/Routes";
+import { AuthProvider } from "./context/AuthContext";
+
 export default function App() {
   return (
-    <div>
-      <h1 className="text-3xl font-bold">Url Shortner</h1>
-    </div>
+    <BrowserRouter>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </BrowserRouter>
   )
 }

@@ -1,4 +1,4 @@
-import api from "./axios.js";
+import api from "./Axios.js";
 
 
 export const analytics = async (shortcode) => {
