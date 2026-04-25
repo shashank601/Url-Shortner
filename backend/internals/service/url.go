@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"os"
 	"strings"
 
 	"github.com/jackc/pgx/v5/pgconn"
@@ -35,6 +36,8 @@ func (s *UrlService) ShortenUrl(ctx context.Context, req dto.UrlShortenRequest) 
 		OriginalUrl: req.OriginalUrl,
 	}
 
+	baseURL := os.Getenv("BASE_URL")
+
 	const maxRetries = 5
 	for i := 0; i < maxRetries; i++ {
 		shortCode, err := shortcode.Generate(url.OriginalUrl)
@@ -46,7 +49,7 @@ func (s *UrlService) ShortenUrl(ctx context.Context, req dto.UrlShortenRequest) 
 
 		_, err = s.Repo.InsertUrlKey(ctx, url)
 		if err == nil {
-			return &dto.UrlShortenResponse{ID: url.ID, ShortCode: shortCode}, nil
+			return &dto.UrlShortenResponse{ID: url.ID, ShortCode: baseURL + "/" + shortCode}, nil
 		}
 
 		if !isDuplicateError(err) {
@@ -149,11 +152,11 @@ func (s *UrlService) ListUserURLs(ctx context.Context) ([]dto.ListUrlResponse, e
 	if err != nil {
 		return nil, err
 	}
-
+	baseURL := os.Getenv("BASE_URL")
 	for _, dbUrl := range dbUrls {
 		urls = append(urls, dto.ListUrlResponse{
 			ID:          dbUrl.ID,
-			ShortCode:   dbUrl.ShortCode,
+			ShortCode:   baseURL + "/" + dbUrl.ShortCode,
 			OriginalUrl: dbUrl.OriginalUrl,
 		})
 	}

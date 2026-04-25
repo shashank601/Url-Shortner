@@ -5,3 +5,4 @@ export const createShortcode = async (url) => {
     return response.data;
 }
 
+
