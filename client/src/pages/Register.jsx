@@ -15,19 +15,22 @@ export default function Register() {
       <div className="flex flex-col gap-2">
         <input
           type="text"
+          value={username}
           onChange={(e) => setUsername(e.target.value)}
           placeholder="enter username"
-          className="p-2 w-full border border-zinc-900"
+          className="p-2 w-full bg-transparent border border-zinc-900"
         />
         <input
           type="email"
+          value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="enter email"
-          className="p-2 w-full border border-zinc-900"
+          className="p-2 w-full bg-transparent border border-zinc-900"
         />
 
         <input
           type="password"
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="enter password"
           className="p-2  w-full border border-zinc-900"
