@@ -29,7 +29,7 @@ func StartApp() {
 
 	handler := c.Handler(router)
 
-	addr := "0.0.0.0:" + port + port
+	addr := "0.0.0.0:" + port
 	log.Println("server started on", addr)
 
 	if err := http.ListenAndServe(addr, handler); err != nil {
