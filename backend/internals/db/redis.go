@@ -27,17 +27,3 @@ func NewRedisClient() *redis.Client {
 	log.Println("connected to redis")
 	return client
 }
-
-func parseIntEnv(key string, fallback int) int {
-	v := os.Getenv(key)
-	if v == "" {
-		return fallback
-	}
-
-	var n int
-	_, err := fmt.Sscanf(v, "%d", &n)
-	if err != nil {
-		return fallback
-	}
-	return n
-}

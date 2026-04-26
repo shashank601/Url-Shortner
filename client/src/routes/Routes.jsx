@@ -6,27 +6,31 @@ import ListUrls from "../pages/ListUrls";
 import GuestRoute from "../components/GuestRoute";
 import RequireAuth from "../components/RequireAuth";
 import AppLayout from "../layout/AppLayout";
+import AuthLayout from "../layout/AuthLayout";
+
 
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route
-        path="/login"
-        element={
-          <GuestRoute>
-            <Login />
-          </GuestRoute>
-        }
-      />
-      <Route
-        path="/register"
-        element={
-          <GuestRoute>
-            <Register />
-          </GuestRoute>
-        }
-      />
-      <Route element={<AppLayout />}>
+      <Route element={<AuthLayout />}>
+        <Route
+          path="/login"
+          element={
+            <GuestRoute>
+              <Login />
+            </GuestRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <GuestRoute>
+              <Register />
+            </GuestRoute>
+          }
+        />
+      </Route>
+      <Route element={<RequireAuth ><AppLayout /></RequireAuth>}>
         <Route path="/" element={<Home />} />
         <Route path="/urls" element={<ListUrls />} />
       </Route>
@@ -35,3 +39,4 @@ export default function AppRoutes() {
     </Routes>
   );
 }
+

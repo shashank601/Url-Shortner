@@ -16,6 +16,6 @@ export const verify = async () => {
     return response.data;
 }
 
-export const Logout = () => {
+export const logout = () => {
     return clearToken(); 
 }
