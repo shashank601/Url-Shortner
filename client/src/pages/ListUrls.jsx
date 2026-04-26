@@ -51,7 +51,7 @@ export default function ListUrls() {
               Short Code
             </h2>
           </div>
-          {urls.map((url) => (
+          {urls ? urls.map((url) => (
             <div
               className={`${
                 activeId === url.short_code
@@ -79,7 +79,7 @@ export default function ListUrls() {
                 stats
               </button>
             </div>
-          ))}
+          )) : <p className="text-center text-gray-500">No History found</p>}
         </div>
         {analyticsResponse && (
           <div className="mr-1 fixed right-0 top-[30%] border border-gray-200  rounded-lg overflow-y-auto p-2 pl-4 bg-white shadow-lg">
