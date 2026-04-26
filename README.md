@@ -1,68 +1,190 @@
+# URL Shortener
 
-## URL Shortner
- 
-### Prerequisites
- 
-- Go (matching `backend/go.mod`)
-- Node.js + npm (for the `client/`)
-- Postgres
-- Redis
- 
-### Environment variables
- 
-Backend reads env vars from `.env` (loaded at startup).
- 
-- `PORT` (optional, default `8080`)
-- `DATABASE_URL` (required)
-- `REDIS_URL` (required)
-- `JWT_SECRET` (required)
- 
-Example:
- 
+![Screenshot Placeholder](./screenshot-placeholder.png)
+
+A modern URL shortening service with user authentication, analytics, and click tracking. Transform long URLs into short, shareable links while gaining insights into click patterns, user agents, and referrer data.
+
+## Main Feature
+
+**Analytics Dashboard** - Track every click on your shortened URLs with total clicks and unique visitor counts. URL lookups are cached using Redis for high-performance redirects.
+
+## Features
+
+- **User Authentication** - Secure signup and login with JWT-based authentication
+- **URL Shortening** - Generate unique short codes for any URL
+- **URL Management** - View and manage all your shortened URLs in one place
+- **Click Analytics** - Basic analytics including:
+  - Total click count
+  - Unique click tracking
+- **Public Redirect** - Fast redirection from short codes to original URLs
+- **Redis Caching** - High-performance caching for URL lookups
+
+## Tech Stack
+
+### Backend
+- **Go 1.26.2** - Core backend framework
+- **PostgreSQL** - Primary database for users, URLs, and click events
+- **Redis** - Caching layer for URL lookups
+- **JWT (golang-jwt/jwt)** - Authentication token management
+- **pgx/v5** - PostgreSQL driver
+- **go-redis/v9** - Redis client
+
+### Frontend
+- **React 19.2.5** - UI framework
+- **Vite 8.0.10** - Build tool and dev server
+- **TailwindCSS 4.2.4** - Styling
+- **React Router 7.14.2** - Client-side routing
+- **Axios** - HTTP client for API requests
+
+## Prerequisites
+
+- Go 1.26.2 or higher
+- Node.js 18+ and npm
+- PostgreSQL 12+
+- Redis 6+
+
+## Setup Instructions
+
+### 1. Clone the Repository
+
+```bash
+git clone <repository-url>
+cd Url-Shortner
+```
+
+### 2. Backend Setup
+
+Navigate to the backend directory:
+
+```bash
+cd backend
+```
+
+Create a `.env` file with the following environment variables:
+
 ```env
 PORT=8080
 DATABASE_URL=postgres://postgres:postgres@localhost:5432/url_shortner?sslmode=disable
 REDIS_URL=redis://localhost:6379/0
-JWT_SECRET=change_me
+JWT_SECRET=your_secure_jwt_secret_here
+BASE_URL=http://localhost:8080
 ```
- 
-### Run backend
- 
-From `backend/`:
- 
-- Run migrations (use whatever tool you already use for `backend/migrations/`)
-- Start server
- 
-The API will run on `http://localhost:8080`.
- 
-### Run client
- 
-From `client/`:
- 
-- `npm install`
-- `npm run dev`
- 
-Client defaults to calling `http://localhost:8080`.
- 
-To override:
- 
-- Set `VITE_API_URL` in `client/.env`.
- 
-Example:
- 
+
+Install Go dependencies:
+
+```bash
+go mod download
+```
+
+Run database migrations:
+
+```bash
+# Use your preferred PostgreSQL migration tool
+# Example with migrate:
+migrate -path migrations -database "$DATABASE_URL" up
+```
+
+Start the backend server:
+
+```bash
+go run cmd/app/main.go
+```
+
+The API will be available at `http://localhost:8080`
+
+### 3. Frontend Setup
+
+Navigate to the client directory:
+
+```bash
+cd client
+```
+
+Create a `.env` file with the API URL:
+
 ```env
 VITE_API_URL=http://localhost:8080
 ```
- 
-### API routes (backend)
- 
-- `POST /signup`
-- `POST /login`
-- `GET /verify` (requires `Authorization: Bearer <token>`)
-- `POST /shorten` (requires auth)
-- `GET /urls` (requires auth)
-- `GET /analytics/{code}` (requires auth)
-- `GET /{code}` (public redirect)
- 
 
- 
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+The frontend will be available at `http://localhost:5173`
+
+## API Endpoints
+
+### Authentication
+
+- **POST /signup**
+  - Register a new user
+  - Body: `{"name": "string", "email": "string", "password": "string"}`
+
+- **POST /login**
+  - Login with email and password
+  - Body: `{"email": "string", "password": "string"}`
+  - Returns JWT token
+
+- **GET /verify**
+  - Verify JWT token validity
+  - Headers: `Authorization: Bearer <token>`
+
+### URL Management
+
+- **POST /shorten**
+  - Create a shortened URL
+  - Headers: `Authorization: Bearer <token>`
+  - Body: `{"url": "string"}`
+
+- **GET /urls**
+  - List all URLs for authenticated user
+  - Headers: `Authorization: Bearer <token>`
+
+### Analytics
+
+- **GET /analytics/{code}**
+  - Get analytics for a specific short code
+  - Headers: `Authorization: Bearer <token>`
+  - Returns: `{"total_clicks": int, "unique_clicks": int}`
+
+### Public
+
+- **GET /{code}**
+  - Redirect to original URL
+  - Tracks click event with IP, user agent, and referrer
+
+## Environment Variables
+
+### Backend (.env)
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| PORT | No | 8080 | Server port |
+| DATABASE_URL | Yes | - | PostgreSQL connection string |
+| REDIS_URL | Yes | - | Redis connection string |
+| JWT_SECRET | Yes | - | Secret key for JWT signing |
+| BASE_URL | Yes | - | Base URL for shortened links (e.g., http://localhost:8080) |
+
+### Frontend (.env)
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| VITE_API_URL | No | http://localhost:8080 | Backend API URL |
+
+## Future Scope
+
+- [ ] Custom alias support for short codes
+- [ ] URL expiration dates
+- [ ] QR code generation for shortened URLs
+- [ ] Bulk URL shortening
+- [ ] Export analytics data (CSV, JSON)
+- [ ] API rate limiting
+- [ ] Webhook notifications on clicks
