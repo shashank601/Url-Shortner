@@ -157,7 +157,7 @@ The frontend will be available at `http://localhost:5173`
 
 ### Public
 
-- **GET /{code}**
+- **GET /r/{code}**
   - Redirect to original URL
   - Tracks click event with IP, user agent, and referrer
 

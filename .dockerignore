@@ -1,0 +1,33 @@
+# Git
+.git
+.gitignore
+
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Build artifacts
+client/node_modules
+client/.vite
+
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Env
+.env
+.env.local
+
+# Go
+bin/
+tmp/
+*.exe
+*.out
+
+# Docker
+docker-compose*

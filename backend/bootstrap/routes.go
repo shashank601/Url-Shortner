@@ -14,7 +14,7 @@ func InitRouter(dep *Dependencies) *http.ServeMux {
 
 	// URL routes
 	mux.Handle("POST /api/shorten", middleware.JWTAuth(http.HandlerFunc(dep.UrlHandler.ShortenUrl)))
-	mux.HandleFunc("GET /api/{code}", dep.UrlHandler.GetUrl)
+	mux.HandleFunc("GET /r/{code}", dep.UrlHandler.GetUrl)
 
 	// Auth routes
 	mux.HandleFunc("POST /api/signup", dep.AuthHandler.Register)
@@ -38,7 +38,15 @@ func InitRouter(dep *Dependencies) *http.ServeMux {
 		panic(err)
 	}
 	exeDir := filepath.Dir(exePath)
+	
+
+	
+	staticPath := filepath.Join(exeDir, "static")
 	clientDistPath := filepath.Join(exeDir, "..", "client", "dist")
+	
+	if _, err := os.Stat(staticPath); err == nil {
+		clientDistPath = staticPath
+	}
 
 
 	mux.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir(filepath.Join(clientDistPath, "assets")))))

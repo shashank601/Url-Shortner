@@ -49,7 +49,7 @@ func (s *UrlService) ShortenUrl(ctx context.Context, req dto.UrlShortenRequest) 
 
 		_, err = s.Repo.InsertUrlKey(ctx, url)
 		if err == nil {
-			return &dto.UrlShortenResponse{ID: url.ID, ShortCode: baseURL + "/" + shortCode}, nil
+			return &dto.UrlShortenResponse{ID: url.ID, ShortCode: baseURL + "/r/" + shortCode}, nil
 		}
 
 		if !isDuplicateError(err) {
@@ -156,7 +156,7 @@ func (s *UrlService) ListUserURLs(ctx context.Context) ([]dto.ListUrlResponse, e
 	for _, dbUrl := range dbUrls {
 		urls = append(urls, dto.ListUrlResponse{
 			ID:          dbUrl.ID,
-			ShortCode:   baseURL + "/" + dbUrl.ShortCode,
+			ShortCode:   baseURL + "/r/" + dbUrl.ShortCode,
 			OriginalUrl: dbUrl.OriginalUrl,
 		})
 	}

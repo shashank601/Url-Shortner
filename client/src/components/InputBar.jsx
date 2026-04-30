@@ -23,12 +23,14 @@ export default function InputBar() {
         className="resize-none w-full p-2 min-h-15 max-h-40 text-xl outline-none bg-white focus:ring-1 focus:ring-zinc-900 transition-colors border border-gray-300 rounded"
         type="text"
         value={url}
+        required
         onChange={(e) => setUrl(e.target.value)}
         placeholder="Paste your link here..."
       ></textarea>
       <button
         type="button"
         onClick={handleSubmit}
+
         disabled={loading}
         className="bg-amber-600 p-8 h-12 text-xl font-semibold font-mono hover:shadow-lg hover:shadow-amber-30 text-white px-4 py-2 rounded"
       >

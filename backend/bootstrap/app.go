@@ -22,7 +22,7 @@ func StartApp() {
 	router := InitRouter(deps)
 
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:5173"}, // hardcoded for now
+		AllowedOrigins: []string{"*"}, // hardcoded for now
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"Content-Type", "Authorization"},
 	})
