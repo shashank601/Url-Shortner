@@ -64,10 +64,12 @@ Create a `.env` file with the following environment variables:
 
 ```env
 PORT=8080
-DATABASE_URL=postgres://postgres:postgres@localhost:5432/url_shortner?sslmode=disable
-REDIS_URL=redis://localhost:6379/0
-JWT_SECRET=your_secure_jwt_secret_here
-BASE_URL=http://localhost:8080
+DATABASE_URL="postgresql://user:password@host:5432/dbname?sslmode=require"
+REDIS_URL="rediss://default:token@host:6379"
+JWT_SECRET="your_jwt_secret_here"
+BASE_URL="http://localhost:8080"
+JWT_EXPIRES_IN="24h"
+VITE_API_URL="/api"
 ```
 
 Install Go dependencies:
