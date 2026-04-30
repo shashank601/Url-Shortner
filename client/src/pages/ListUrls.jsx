@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { ListAllUrls } from "../services/Analytics";
-import { analytics } from "../services/Analytics";
+import { ListAllUrls } from "../services/Analytics.js";
+import { analytics } from "../services/Analytics.js";
 
 export default function ListUrls() {
   const [urls, setUrls] = useState([]);

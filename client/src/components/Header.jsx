@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../services/Auth";
+import { logout } from "../services/Auth.js";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Header() {
