@@ -11,16 +11,13 @@ FROM golang:1.26-alpine AS backend-builder
 WORKDIR /app
 
 COPY backend/go.mod backend/go.sum ./
-RUN --mount=type=cache,target=/go/pkg/mod \
-    go mod download
+RUN go mod download
 
 COPY backend/ .
 
 
 COPY --from=frontend-builder /app/client/dist ./static 
-RUN --mount=type=cache,target=/root/.cache/go-build \
-    --mount=type=cache,target=/go/pkg/mod \
-    CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /url-shortener ./cmd/app/main.go
+RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /url-shortener ./cmd/app/main.go
 
 
 FROM alpine:3.20
