@@ -13,9 +13,8 @@
 
 </div>
 
-![Screenshot Placeholder](./screenshot-placeholder.png)
-
-A modern URL shortening service with user authentication, analytics, and click tracking. Transform long URLs into short, shareable links while gaining insights into click patterns, user agents, and referrer data.
+---
+A URL shortening service with user authentication, analytics, and click tracking. Transform long URLs into short, shareable links while gaining insights into click patterns, user agents, and referrer data.
 
 ## Main Feature
 
@@ -31,6 +30,65 @@ A modern URL shortening service with user authentication, analytics, and click t
   - Unique click tracking
 - **Public Redirect** - Fast redirection from short codes to original URLs
 - **Redis Caching** - High-performance caching for URL lookups
+
+
+---
+## Product Walkthrough
+
+### Authentication Screens
+
+<table>
+  <tr>
+    <td><img width="400" alt="Screenshot 2026-05-02 042808" src="https://github.com/user-attachments/assets/e36c0bda-8507-437b-b8bf-dbefa5141ecd" /></td>
+    <td><img width="400" alt="Screenshot 2026-05-02 042817" src="https://github.com/user-attachments/assets/36f33c77-c859-424d-964c-2a25bfd7e968" />
+</td>
+  </tr>
+</table> 
+
+---
+
+### Link creation and links overview screens
+
+<table>
+  <tr>
+    <td>
+      <img width="600" alt="Screenshot 2026-05-02 042844" src="https://github.com/user-attachments/assets/98a1dad3-a11e-4faa-a4ba-069f6494297c" />
+    </td>
+    <td>
+      <img width="600" alt="Screenshot 2026-05-02 043013" src="https://github.com/user-attachments/assets/93189e52-9fa6-4b6c-8e0e-aa627f76cfbf" />
+    </td>
+  </tr>
+</table> 
+<table>
+  <tr>
+    <td>
+      <img width="600" alt="Screenshot 2026-05-02 042854" src="https://github.com/user-attachments/assets/88600777-edd2-4a1c-ba08-e42c4c8c4060" />
+    </td>
+    <td>
+      <img width="600" alt="Screenshot 2026-05-02 043029" src="https://github.com/user-attachments/assets/6e5fed81-6485-4b02-ba3c-baa0c85a6e91" />
+    </td>
+  </tr>
+</table> 
+
+---
+
+### Links list with per-link analytics
+
+<table>
+  <tr>
+    <td>
+      <img width="600" alt="Screenshot 2026-05-02 043550" src="https://github.com/user-attachments/assets/d1da2d86-bc75-43e9-bfbc-dd0b7594babd" />
+    </td>
+    <td>
+      <img width="600" alt="Screenshot 2026-05-02 050251" src="https://github.com/user-attachments/assets/ce80501a-0f59-4e6a-ad4a-651c5e48e7b3" />
+    </td>
+  </tr>
+</table> 
+
+
+---
+
+
 
 ## Tech Stack
 
